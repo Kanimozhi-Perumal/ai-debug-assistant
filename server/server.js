@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import debugRoute from "./routes/debugRoute.js";
 import authRoute from "./routes/authRoute.js";
+import chatRoutes from "./routes/chatRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -12,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoute);
+app.use("/api/chat", chatRoutes);
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))

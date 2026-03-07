@@ -23,7 +23,14 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // ✅ Disable base rule
+      'no-unused-vars': 'off',
+
+      // ✅ Use JS rule but allow JSX usage properly
+      '@eslint/js/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '^[A-Z_]' }
+      ],
     },
   },
 ])

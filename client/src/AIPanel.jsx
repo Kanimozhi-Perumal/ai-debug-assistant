@@ -1,167 +1,98 @@
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { motion } from "framer-motion";
+import Lottie from "lottie-react";
+import aiAnimation from "./assets/ai-animation.json";
 
 export default function AIPanel({ data, loading }) {
+
+  // 🧠 Loading State
   if (loading) {
     return (
-      <div className="w-96 bg-[#252526] p-4">
-        <p className="animate-pulse">AI Thinking...</p>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#0b1120]">
+        <p className="animate-pulse text-gray-300 text-lg">
+          AI is analyzing your code...
+        </p>
       </div>
     );
   }
 
+  // 🌟 HERO STYLE EMPTY STATE
   if (!data) {
     return (
-      <div className="w-96 bg-[#252526] p-4">
-        <p>No debug results yet.</p>
+      <div className="flex-1 flex items-center justify-center p-10 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black">
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-md"
+        >
+          <div className="w-40 mx-auto mb-6">
+            <Lottie animationData={aiAnimation} loop />
+          </div>
+
+          <h2 className="text-3xl font-bold text-white mb-4">
+            AI Code Debug Assistant
+          </h2>
+
+          <p className="text-blue-400 mb-6">
+            Fix logical bugs, detect syntax errors,
+            and optimize performance instantly.
+          </p>
+
+          <p className="text-gray-400 text-sm">
+            Click "Debug Current File" to begin analysis 🚀
+          </p>
+        </motion.div>
+
       </div>
     );
   }
 
-  const severityColor =
-    data.severity === "High"
-      ? "text-red-400"
-      : data.severity === "Medium"
-      ? "text-yellow-400"
-      : "text-green-400";
-
-  const copyCode = () => {
-    navigator.clipboard.writeText(data.fixedCode);
-  };
-
-  const downloadCode = () => {
-    const blob = new Blob([data.fixedCode], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "fixedCode.js";
-    link.click();
-  };
-
-  // ✅ PDF Download Function
-  const downloadPDF = async () => {
-    const input = document.getElementById("report");
-
-    const canvas = await html2canvas(input);
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p", "mm", "a4");
-    const width = pdf.internal.pageSize.getWidth();
-    const height = (canvas.height * width) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    pdf.save("Debug_Report.pdf");
-  };
-
+  // 🔍 DEBUG RESULT VIEW
   return (
-    <div className="w-96 bg-[#252526] p-4 overflow-y-auto space-y-4">
+    <div className="flex-1 overflow-y-auto p-6 bg-[#0f172a] text-white space-y-6">
 
-      {/* 🔽 Entire AI Report Wrapped */}
-      <div id="report">
-
-        <div>
-          <h3 className="font-bold">🛑 Syntax Errors</h3>
-          <p>{data.syntaxErrors}</p>
-        </div>
-
-        <div>
-          <h3 className="font-bold">⚠️ Logical Errors</h3>
-          <p>{data.logicErrors}</p>
-        </div>
-
-        <div>
-          <h3 className="font-bold">📘 Why</h3>
-          <p>{data.why}</p>
-        </div>
-
-        <div>
-          <h3 className="font-bold">✅ Fixed Code</h3>
-          <pre className="bg-black p-2 text-sm rounded overflow-x-auto">
-            {data.fixedCode}
-          </pre>
-        </div>
-
-        <div>
-          <h3 className="font-bold">🚀 Optimized Code</h3>
-          <pre className="bg-black p-2 text-sm rounded overflow-x-auto">
-            {data.optimizedCode}
-          </pre>
-        </div>
-
-        {/* 💡 Improvement Suggestions */}
-        <div>
-          <h2 className="text-purple-400 font-semibold mt-6">
-            💡 Improvement Suggestions
-          </h2>
-
-          <ul className="mt-2 space-y-2">
-            {data.improvementSuggestions?.map((item, index) => (
-              <li
-                key={index}
-                className="bg-gray-800 p-2 rounded text-sm"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* 🚀 Badge Section */}
-        <div className="flex gap-3 mt-6 flex-wrap">
-
-          <span className="bg-blue-600 px-3 py-1 rounded text-sm">
-            ⏱ Time: {data.timeComplexity}
-          </span>
-
-          <span className="bg-green-600 px-3 py-1 rounded text-sm">
-            💾 Space: {data.spaceComplexity}
-          </span>
-
-          <span
-            className={`px-3 py-1 rounded text-sm ${
-              data.optimizationPossible === "Yes"
-                ? "bg-yellow-600"
-                : "bg-gray-600"
-            }`}
-          >
-            🚀 Optimization: {data.optimizationPossible}
-          </span>
-
-          <span className={`${severityColor} font-semibold`}>
-            🔥 Severity: {data.severity}
-          </span>
-
-          <span className="text-purple-400 font-semibold">
-            🎯 Confidence: {data.confidence}
-          </span>
-
-        </div>
-
+      <div>
+        <h3 className="font-bold text-red-400">🛑 Syntax Errors</h3>
+        <p className="text-gray-300">{data.syntaxErrors}</p>
       </div>
 
-      {/* ✅ Action Buttons */}
-      <div className="mt-4 flex gap-3 flex-wrap">
+      <div>
+        <h3 className="font-bold text-yellow-400">⚠ Logical Errors</h3>
+        <p className="text-gray-300">{data.logicErrors}</p>
+      </div>
 
-        <button
-          onClick={copyCode}
-          className="bg-gray-700 px-3 py-1 rounded"
-        >
-          Copy Code
-        </button>
+      <div>
+        <h3 className="font-bold text-blue-400">📘 Explanation</h3>
+        <p className="text-gray-300">{data.why}</p>
+      </div>
 
-        <button
-          onClick={downloadCode}
-          className="bg-gray-700 px-3 py-1 rounded"
-        >
-          Download Code
-        </button>
+      <div>
+        <h3 className="font-bold text-green-400">✅ Fixed Code</h3>
+        <pre className="bg-black/70 p-4 rounded-lg overflow-x-auto text-sm">
+          {data.fixedCode}
+        </pre>
+      </div>
 
-        <button
-          onClick={downloadPDF}
-          className="bg-green-600 px-4 py-2 rounded hover:bg-green-500"
-        >
-          Download Debug Report (PDF)
-        </button>
+      <div>
+        <h3 className="font-bold text-purple-400">🚀 Optimized Code</h3>
+        <pre className="bg-black/70 p-4 rounded-lg overflow-x-auto text-sm">
+          {data.optimizedCode}
+        </pre>
+      </div>
 
+      <div className="flex gap-4 flex-wrap text-sm mt-6">
+        <span className="bg-blue-600 px-3 py-1 rounded">
+          ⏱ {data.timeComplexity}
+        </span>
+
+        <span className="bg-green-600 px-3 py-1 rounded">
+          💾 {data.spaceComplexity}
+        </span>
+
+        <span className="bg-purple-600 px-3 py-1 rounded">
+          🎯 Confidence: {data.confidence}
+        </span>
       </div>
 
     </div>
